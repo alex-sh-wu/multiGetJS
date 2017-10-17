@@ -1,0 +1,8 @@
+{
+  "name": "multiGet_alex-sh-wu",
+  "version": "1.0.0",
+  "dependencies": {
+    "promise": "^8.0.1",
+    "xhr2": "^0.1.4"
+  }
+}
