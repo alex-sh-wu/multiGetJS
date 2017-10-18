@@ -1,5 +1,6 @@
 # ignore everything
 *
+node_modules/
 
 # keep these files
 !README.md
