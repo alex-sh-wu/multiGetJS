@@ -1,3 +1,7 @@
+/* 
+	Author: Alex Sin Hang Wu
+*/
+
 module.exports = {
 	get: parallelGet,
 }
@@ -9,18 +13,13 @@ var finishedMessage = require('./utility.js').finishedMessage;
 var unexpectedServerResponse = require('./utility.js').unexpectedServerResponse;
 var XMLHttpRequest = require('xhr2');
 
-function parallelGet (filename, url, chunkRanges) {
-	
-	console.log(filename);
-	console.log(url);
-	console.log(chunkRanges);
-	
+function parallelGet (filename, url, chunkRanges) {	
 	function downloadChunk (filename, url, chunkRange) {
 		return new Promise(function (fulfill) {
 			var xhr = new XMLHttpRequest();
 			xhr.onreadystatechange = function (e) {
 				if (xhr.readyState === 4) {
-					if (xhr.status !== 206) {
+					if (xhr.status !== 206 && xhr.status !== 200) {
 						unexpectedServerResponse(xhr.status);
 					} else {
 						fulfill(xhr.responseText);
