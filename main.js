@@ -23,6 +23,8 @@ if (process.argv.length < minParameters) {
 	callAndExit(() => {utility.usage(process.argv[1]);})
 }
 
+//Go through all the flags and record the settings. Throw errors if needed
+
 var filename = "";
 var parallel = false;
 var numberOfChunks = defaultNumberOfChunks;
@@ -86,8 +88,12 @@ if (filename === "") {
 	}
 }
 
+
+//calculate file size and download the file
 var chunkRanges = [];
 
+//Normally, I would not put all my code in the callback function. 
+//Unfortunately, the AJAX library that I chose did not support synchronous AJAX operations, so I had to put the rest of my code in a callback to emulate synchronous behaviour.
 utility.getFileSize(url, function(filesize) {
 	//error checking
     if (isNaN(filesize)) {
@@ -95,7 +101,7 @@ utility.getFileSize(url, function(filesize) {
 	}
 	
 	if (filesize < size) {
-		utility.automaticFileSizeReduction();
+		utility.automaticFileSizeReduction(); //this is only a warning and would not quit the program
 	}
 	size = Math.min(filesize, size); //readjust size in case the file size is smaller than the default size
 	
@@ -104,10 +110,10 @@ utility.getFileSize(url, function(filesize) {
 	}
 	
 	//create new file
-	utility.createFile(filename, () => {callAndExit(() => {utility.fileExists(filename);})}); //create the file to write in
+	utility.createFile(filename, () => {callAndExit(() => {utility.fileExists(filename);})}); //create the file to write in, throws error if file already exist
 	
-	const chunkSize = Math.floor(size / numberOfChunks);
-	
+	//calculate the ranges of the chunks
+	const chunkSize = Math.floor(size / numberOfChunks);	
 	for (var i = 0; i < numberOfChunks; i++) {
 		if (i === 0) {
 			chunkRanges.push([0, chunkSize - 1]);
@@ -120,6 +126,7 @@ utility.getFileSize(url, function(filesize) {
 		}
 	}
 	
+	//display a message and proceed to download
 	utility.gettingToWorkMessage (url, filename, numberOfChunks);
 	
 	if (parallel) {

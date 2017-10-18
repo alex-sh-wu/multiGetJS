@@ -13,6 +13,8 @@ var unexpectedServerResponse = require('./utility.js').unexpectedServerResponse;
 var XMLHttpRequest = require('xhr2');
 
 //unfortunately, synchronous GET's were not supported by this library, so I had to nest asynchronous calls
+//this limited my coding style and I had to hard code the number of chunks allowed for a serial download
+//fortunately, the chunk ranges are still dynamic
 
 function serialGet (filename, url, chunkRanges) {
 	var xhr3 = new XMLHttpRequest();

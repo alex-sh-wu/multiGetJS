@@ -28,7 +28,7 @@ function parallelGet (filename, url, chunkRanges) {
 			}
 			xhr.open('GET', url, true); 
 			xhr.setRequestHeader('Range', 'bytes='+chunkRange[0]+'-'+chunkRange[1]);
-			xhr.overrideMimeType("text\/plain; charset=x-user-defined");
+			xhr.overrideMimeType("text\/plain; charset=x-user-defined"); //this is to ensure the data is interpreted as plaintext instead of just assuming it is in utf8
 			xhr.send();
 		});
 	}
@@ -39,9 +39,12 @@ function parallelGet (filename, url, chunkRanges) {
 	}
 	
 	Promise.all(chunkArray).then(function (result) {
-		appendToFile(filename, result[0], () => {});
-		appendToFile(filename, result[1], () => {});
-		appendToFile(filename, result[2], () => {});
-		appendToFile(filename, result[3], () => {finishedMessage();});
+		for (var i = 0; i < chunkArray.length; i++) {
+			if (i + 1 === chunkArray.length) {
+				appendToFile(filename, result[i], () => {finishedMessage();});
+			} else {
+				appendToFile(filename, result[i]);
+			}
+		}
 	})
 }
