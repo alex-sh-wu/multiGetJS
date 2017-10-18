@@ -1,3 +1,7 @@
+/* 
+	Author: Alex Sin Hang Wu
+*/
+
 module.exports = {
 	get: serialGet,
 }
@@ -11,15 +15,10 @@ var XMLHttpRequest = require('xhr2');
 //unfortunately, synchronous GET's were not supported by this library, so I had to nest asynchronous calls
 
 function serialGet (filename, url, chunkRanges) {
-	console.log("serial");
-	console.log(filename);
-	console.log(url);
-	console.log(chunkRanges);
-
 	var xhr3 = new XMLHttpRequest();
 	xhr3.onreadystatechange = function (e) {
 		if (xhr3.readyState === 4) {
-			if (xhr3.status !== 206) {
+			if (xhr3.status !== 206 && xhr3.status !== 200) {
 				unexpectedServerResponse(xhr3.status);
 			} else {
 				appendToFile(filename, xhr3.responseText, () => {finishedMessage();});
@@ -33,7 +32,7 @@ function serialGet (filename, url, chunkRanges) {
 	var xhr2 = new XMLHttpRequest();
 	xhr2.onreadystatechange = function (e) {
 		if (xhr2.readyState === 4) {
-			if (xhr2.status !== 206) {
+			if (xhr2.status !== 206 && xhr2.status !== 200) {
 				unexpectedServerResponse(xhr2.status);
 			} else {
 				appendToFile(filename, xhr2.responseText, () => {xhr3.send();});
@@ -47,7 +46,7 @@ function serialGet (filename, url, chunkRanges) {
 	var xhr1 = new XMLHttpRequest();
 	xhr1.onreadystatechange = function (e) {
 		if (xhr1.readyState === 4) {
-			if (xhr1.status !== 206) {
+			if (xhr1.status !== 206 && xhr1.status !== 200) {
 				unexpectedServerResponse(xhr1.status);
 			} else {
 				appendToFile(filename, xhr1.responseText, () => {xhr2.send();});
@@ -61,7 +60,7 @@ function serialGet (filename, url, chunkRanges) {
 	var xhr0 = new XMLHttpRequest();
 	xhr0.onreadystatechange = function (e) {
 		if (xhr0.readyState === 4) {
-			if (xhr0.status !== 206) {
+			if (xhr0.status !== 206 && xhr0.status !== 200) {
 				unexpectedServerResponse(xhr0.status);
 			} else {
 				appendToFile(filename, xhr0.responseText, () => {xhr1.send();});
