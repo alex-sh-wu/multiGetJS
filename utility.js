@@ -16,6 +16,8 @@ module.exports = {
 	fileTooSmall: fileTooSmall,
 	parallelDownloadOnly: parallelDownloadOnly,
 	automaticFileSizeReduction: automaticFileSizeReduction,
+	chunkNumberError: chunkNumberError,
+	downloadSizeError: downloadSizeError,
 	
 	//borrowed algorithms
 	checkIfValidUrl: checkIfValidUrl,
@@ -33,9 +35,9 @@ function usage (filename) {
 	console.log("        Write output to <file> instead of default");
 	console.log("  -parallel");
 	console.log("        Download chunks in parallel instead of sequentally");
-	console.log("  -chunkNumber");
+	console.log("  -chunkNumber int");
 	console.log("        Specify the number of chunks to use. The default number is 4. Must also pass in the '-parallel' flag");
-	console.log("  -downloadSize");
+	console.log("  -downloadSize int");
 	console.log("        Specify the total size of the file to be downloaded");
 }
 
@@ -78,6 +80,14 @@ function parallelDownloadOnly () {
 
 function automaticFileSizeReduction () {
 	warningMessage("The size to be downloaded is smaller than the one listed in the current settings. The size will be automatically readjusted.");
+}
+
+function chunkNumberError () {
+	errorMessage("When using the '-chunkNumber' flag, you must enter in a number greater than 0");
+}
+
+function downloadSizeError () {
+	errorMessage("When using the '-downloadSize' flag, you must enter in a number greater than 0");
 }
 
 function checkIfValidUrl (str) {

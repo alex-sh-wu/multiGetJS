@@ -10,14 +10,17 @@ function callAndExit(callback) {
 	process.exit(-1);
 }
 
-//currently, the file will be run as 
+// default settings as constants for easy adjustment and comparison
+const defaultNumberOfChunks = 4;
+const defaultDownloadSize = 4194304; //in bytes
+
+//currently, the file is run as
 //
 //      node app.js [OPTIONS] url
 //
 //therefore, there must be at least 3 parameters for the program to work
 const minParameters = 3;
-const defaultNumberOfChunks = 4;
-const defaultDownloadSize = 4194304; //in bytes
+
 
 if (process.argv.length < minParameters) {
 	callAndExit(() => {utility.usage(process.argv[1]);})
@@ -47,6 +50,9 @@ for ( ; currentParameterIndex < process.argv.length; currentParameterIndex++) {
 			if (currentParameterIndex + 1 < process.argv.length && process.argv[currentParameterIndex + 1] != "") {
 				currentParameterIndex++;
 				numberOfChunks = parseInt(process.argv[currentParameterIndex]);
+				if (isNaN(numberOfChunks) || numberOfChunks <= 0) {
+					callAndExit(() => {utility.chunkNumberError();})
+				}
 			}
 			else {
 				callAndExit(() => {utility.usage(process.argv[1]);})
@@ -55,6 +61,9 @@ for ( ; currentParameterIndex < process.argv.length; currentParameterIndex++) {
 			if (currentParameterIndex + 1 < process.argv.length && process.argv[currentParameterIndex + 1] != "") {
 				currentParameterIndex++;
 				size = parseInt(process.argv[currentParameterIndex]);
+				if (isNaN(size) || size <= 0) {
+					callAndExit(() => {utility.downloadSizeError();})
+				}
 			}
 			else {
 				callAndExit(() => {utility.usage(process.argv[1]);})
