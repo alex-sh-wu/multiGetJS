@@ -38,7 +38,7 @@ function parallelGet (filename, url, chunkRanges) {
 		chunkArray.push(downloadChunk(filename, url, chunkRanges[i]));
 	}
 	
-	Promise.all(chunkArray).then(function (result) {
+	Promise.all(chunkArray).then(function (result) { //waits for all the chunks to be downloaded, and then it writes to the files
 		for (var i = 0; i < chunkArray.length; i++) {
 			if (i + 1 === chunkArray.length) {
 				appendToFile(filename, result[i], () => {finishedMessage();});
