@@ -1,17 +1,27 @@
+/* 
+	Author: Alex Sin Hang Wu
+*/
+
 module.exports = {
+	//messages
     usage: usage,
     undefinedFlag: undefinedFlag,
-	errorMessage: errorMessage,
 	fileExists: fileExists,
 	cannotDownload: cannotDownload,
 	incompleteURL: incompleteURL,
 	unexpectedServerResponse: unexpectedServerResponse,
-	checkIfValidUrl: checkIfValidUrl,
 	gettingToWorkMessage: gettingToWorkMessage,
 	finishedMessage: finishedMessage,
 	grabFileName: grabFileName,
-	getFileSize: getFileSize,
 	fileTooSmall: fileTooSmall,
+	parallelDownloadOnly: parallelDownloadOnly,
+	automaticFileSizeReduction: automaticFileSizeReduction,
+	
+	//borrowed algorithms
+	checkIfValidUrl: checkIfValidUrl,
+	getFileSize: getFileSize,
+	
+	//file operations
 	createFile: createFile,
 	writeToFile: writeToFile,
 	appendToFile: appendToFile
@@ -23,11 +33,19 @@ function usage (filename) {
 	console.log("        Write output to <file> instead of default");
 	console.log("  -parallel");
 	console.log("        Download chunks in parallel instead of sequentally");
+	console.log("  -chunkNumber");
+	console.log("        Specify the number of chunks to use. The default number is 4. Must also pass in the '-parallel' flag");
+	console.log("  -downloadSize");
+	console.log("        Specify the total size of the file to be downloaded");
 }
 
 function undefinedFlag (flag, filename) {
 	console.log("flag provided but not defined: " + flag);
 	usage(filename);
+}
+
+function warningMessage (message) {
+	console.log("[WARNING] " + message);
 }
 
 function errorMessage (message) {
@@ -52,6 +70,14 @@ function unexpectedServerResponse (response) {
 
 function fileTooSmall () {
 	errorMessage("Please download a bigger file.");
+}
+
+function parallelDownloadOnly () {
+	errorMessage("To change the number of chunks, you must also pass in a '-parallel' flag.");
+}
+
+function automaticFileSizeReduction () {
+	warningMessage("The size to be downloaded is smaller than the one listed in the current settings. The size will be automatically readjusted.");
 }
 
 function checkIfValidUrl (str) {
