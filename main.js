@@ -75,10 +75,6 @@ for ( ; currentParameterIndex < process.argv.length; currentParameterIndex++) {
 	}
 }
 
-if (numberOfChunks !== defaultNumberOfChunks && !parallel) {
-	callAndExit(() => {utility.parallelDownloadOnly();})
-}
-
 if (currentParameterIndex + 1 !== process.argv.length) { //if the current parameter is not the last one, throw an error
 	callAndExit(() => {utility.usage(process.argv[1]);})
 }
