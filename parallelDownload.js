@@ -7,32 +7,45 @@ module.exports = {
 }
 
 var Promise = require('promise');
-var writeToFile = require('./utility.js').writeToFile;
 var appendToFile = require('./utility.js').appendToFile;
+var deleteFile = require('./utility.js').deleteFile;
 var finishedMessage = require('./utility.js').finishedMessage;
 var unexpectedServerResponse = require('./utility.js').unexpectedServerResponse;
-var XMLHttpRequest = require('xhr2');
+const http = require('http');
+const URL = require('url');
 
 function parallelGet (filename, url, chunkRanges) {	
 	function downloadChunk (filename, url, chunkRange) {
 		return new Promise(function (fulfill) {
-			var xhr = new XMLHttpRequest();
-			xhr.onreadystatechange = function (e) {
-				if (xhr.readyState === 4) {
-					if (xhr.status !== 206 && xhr.status !== 200) {
-						unexpectedServerResponse(xhr.status);
-					} else {
-						fulfill(xhr.responseText);
-					}
+			const myURL = URL.parse(url);
+			var options = {
+				hostname: myURL.hostname,
+				port: myURL.port,
+				path: myURL.pathname,
+				method: 'GET',
+				headers: {
+					range: 'bytes='+chunkRange[0]+'-'+chunkRange[1],
 				}
-			}
-			xhr.open('GET', url, true); 
-			xhr.setRequestHeader('Range', 'bytes='+chunkRange[0]+'-'+chunkRange[1]);
-			xhr.overrideMimeType("text\/plain; charset=x-user-defined"); //this is to ensure the data is interpreted as plaintext instead of assuming it is in utf8
-			xhr.send();
+			};
+			http.get(options, (response) => {
+				// write to file while we receive data
+				var chunks = [];
+				var chunksLength = 0;
+				response.on("data", function(chunk) {
+					chunks.push(chunk);
+					chunksLength += Buffer.byteLength(chunk);
+				});
+				
+				response.on("end", function() {
+					chunks = Buffer.concat(chunks, chunksLength);
+					fulfill(chunks);
+				});
+			}).on('error', function(err) { // Handle errors
+				deleteFile(filename);
+				unexpectedServerResponse(err.message);
+			});
 		});
 	}
-	
 	var chunkArray = [];
 	for (var i = 0; i < chunkRanges.length; i++) {
 		chunkArray.push(downloadChunk(filename, url, chunkRanges[i]));

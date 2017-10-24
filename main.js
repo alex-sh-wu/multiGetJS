@@ -2,7 +2,6 @@
 	Author: Alex Sin Hang Wu
 */
 
-var XMLHttpRequest = require('xhr2');
 var utility = require('./utility.js');
 
 function callAndExit(callback) {

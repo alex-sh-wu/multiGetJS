@@ -26,7 +26,8 @@ module.exports = {
 	//file operations
 	createFile: createFile,
 	writeToFile: writeToFile,
-	appendToFile: appendToFile
+	appendToFile: appendToFile,
+	deleteFile: deleteFile,
 }
 
 function usage (filename) {
@@ -121,17 +122,29 @@ function grabFileName (url) {
 }
 
 function getFileSize(url, callback) {
-	var XMLHttpRequest = require('xhr2');
-	//this algorithm is borrowed from the highest rated response at https://stackoverflow.com/questions/17416274/ajax-get-size-of-file-before-downloading
-    var xhr = new XMLHttpRequest();
-    xhr.open("HEAD", url, true); // Notice "HEAD" instead of "GET",
-                                 //  to get only the header
-    xhr.onreadystatechange = function() {
-        if (this.readyState == this.DONE) {
-            callback(parseInt(xhr.getResponseHeader("Content-Length")));
-        }
-    };
-    xhr.send();
+	/*
+	var request = require('request');
+	request({
+		url: url,
+		method: "HEAD",
+	}, (err, result) => {
+		var sizeInBytes = result.headers['content-length'];
+		callback(parseInt(sizeInBytes));
+	});
+	*/
+	const http = require('http');
+	const URL = require('url');
+	const myURL = URL.parse(url);
+	var options = {
+		hostname: myURL.hostname,
+		port: myURL.port,
+		path: myURL.pathname,
+		method: 'HEAD',
+	};
+	http.get(options, response => {
+		var sizeInBytes = parseInt(response.headers['content-length']);
+		callback(sizeInBytes);
+	});
 }
 
 function createFile (filename, failedCallback) {
@@ -144,7 +157,7 @@ function createFile (filename, failedCallback) {
 
 function writeToFile (filename, content, callBack = () => {}) {
 	var fs = require('fs');
-	fs.writeFile(filename, content, function(err) {
+	fs.writeFile(filename, content, (err) => {
 		if(err) {
 			console.log(err);
 		} else {
@@ -155,7 +168,13 @@ function writeToFile (filename, content, callBack = () => {}) {
 
 function appendToFile (filename, content, callBack = () => {}) {
 	var fs = require('fs');
-	fs.appendFile(filename, content, function(err) {
+	fs.appendFileSync(filename, content);
+	callBack();
+}
+
+function deleteFile (filename, callBack = () => {}) {
+	var fs = require('fs');
+	fs.unlink(destination, (err) => {
 		if(err) {
 			console.log(err);
 		} else {
