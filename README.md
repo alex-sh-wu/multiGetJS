@@ -29,7 +29,7 @@ __-downloadSize *int*__
 ## Bonus Features Implemented:
 - if a file specified to be downloaded was smaller than 4 MiB, multiGet will readjust the size
 - You can adjust the size file to be downloaded with the '-downloadSize' flag
-- When downloading the file with using the '-parallel' flag, you can adjust the size of the chunks using '-chunkNumer'
+- You can adjust the size of the chunks using '-chunkNumber'
 
 
 ## A few remarks:
